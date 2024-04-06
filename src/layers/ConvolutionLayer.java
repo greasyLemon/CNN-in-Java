@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static data.MatrixUtility.add;
+import static data.MatrixUtility.multiply;
+
 public class ConvolutionLayer extends Layer{
 
     private long SEED;
@@ -141,7 +144,7 @@ public class ConvolutionLayer extends Layer{
             for(int f = 0; f < _filters.size(); f++){
 
                 double[][] currFilter = _filters.get(f);
-                double[][] error = dLdO.get(i*_filters.size() + f);
+                double[][] error = dLd0.get(i*_filters.size() + f);
 
                 double[][] spacedError = spaceArray(error);
                 double[][] dLdF = convolve(_lastInput.get(i), spacedError, 1);
