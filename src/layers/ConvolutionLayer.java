@@ -127,11 +127,49 @@ public class ConvolutionLayer extends Layer{
 
     @Override
     public void backPropagation(List<double[][]> dLd0) {
+        List<double[][]> filtersDelta = new ArrayList<>();
+        List<double[][]> dLdOPreviousLayer= new ArrayList<>();
 
+        for(int f = 0; f < _filters.size(); f++){
+            filtersDelta.add(new double[_filterSize][_filterSize]);
+        }
+
+        for(int i = 0; i < _lastInput.size(); i++){
+
+            double[][] errorForInput = new double[_inRows][_inCols];
+
+            for(int f = 0; f < _filters.size(); f++){
+
+                double[][] currFilter = _filters.get(f);
+                double[][] error = dLdO.get(i*_filters.size() + f);
+
+                double[][] spacedError = spaceArray(error);
+                double[][] dLdF = convolve(_lastInput.get(i), spacedError, 1);
+
+                double[][] delta = multiply(dLdF, _learningRate*-1);
+                double[][] newTotalDelta = add(filtersDelta.get(f), delta);
+                filtersDelta.set(f, newTotalDelta);
+
+                double[][] flippedError = flipArrayHorizontal(flipArrayVertical(spacedError));
+                errorForInput = add(errorForInput, fullConvolve(currFilter, flippedError));
+
+            }
+
+            dLdOPreviousLayer.add(errorForInput);
+
+        }
+
+        for(int f =0; f < _filters.size(); f++){
+            double[][] modified = add(filtersDelta.get(f), _filters.get(f));
+            _filters.set(f,modified);
+        }
+
+        if(_previousLayer!= null){
+            _previousLayer.backPropagation(dLdOPreviousLayer);
+        }
     }
 
     @Override
     public void backPropagation(double[] dLd0) {
-
     }
 }
