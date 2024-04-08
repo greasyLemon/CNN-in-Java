@@ -21,10 +21,10 @@ public abstract class Layer {
     public abstract double[] getOutput(List<double[][]> input);
     public abstract double[] getOutput(double[] input);
 
-    public abstract int getOuputLength();
-    public abstract int getOuputRows();
-    public abstract int getOuputCols();
-    public abstract int getOuputElements();
+    public abstract int getOutputLength();
+    public abstract int getOutputRows();
+    public abstract int getOutputCols();
+    public abstract int getOutputElements();
 
     public abstract void backPropagation(List<double[][]> dLd0);
     public abstract void backPropagation(double[] dLd0);

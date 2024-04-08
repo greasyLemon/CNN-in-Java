@@ -120,22 +120,22 @@ public class FullyConnectedLayer extends Layer{
     }
 
     @Override
-    public int getOuputLength() {
+    public int getOutputLength() {
         return 0;
     }
 
     @Override
-    public int getOuputRows() {
+    public int getOutputRows() {
         return 0;
     }
 
     @Override
-    public int getOuputCols() {
+    public int getOutputCols() {
         return 0;
     }
 
     @Override
-    public int getOuputElements() {
+    public int getOutputElements() {
         return _outLength;
     }
 

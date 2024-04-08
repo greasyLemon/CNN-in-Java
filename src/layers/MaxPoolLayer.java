@@ -35,12 +35,12 @@ public class MaxPoolLayer extends Layer{
     }
 
     public double[][] pool(double[][] input) {
-        double[][] output = new double[getOuputRows()][getOuputCols()];
-        int[][] maxRows = new int[getOuputRows()][getOuputCols()];
-        int[][] maxCols = new int[getOuputRows()][getOuputCols()];
+        double[][] output = new double[getOutputRows()][getOutputCols()];
+        int[][] maxRows = new int[getOutputRows()][getOutputCols()];
+        int[][] maxCols = new int[getOutputRows()][getOutputCols()];
 
-        for (int r = 0; r < getOuputRows(); r += _stepSize) {
-            for (int c = 0; c < getOuputCols(); c += _stepSize) {
+        for (int r = 0; r < getOutputRows(); r += _stepSize) {
+            for (int c = 0; c < getOutputCols(); c += _stepSize) {
                 double max = 0.0;
                 for (int x = 0; x < _windowSize; x++) {
                     for (int y = 0; y < _windowSize; y++) {
@@ -77,8 +77,8 @@ public class MaxPoolLayer extends Layer{
         int l = 0;
         for (double[][] array : dLd0) {
             double[][] error = new double[_inRows][_inCols];
-            for (int r = 0; r < getOuputRows(); r++) {
-                for (int c = 0; c < getOuputCols(); c++) {
+            for (int r = 0; r < getOutputRows(); r++) {
+                for (int c = 0; c < getOutputCols(); c++) {
                     int max_i = _lastMaxRow.get(l)[r][c];
                     int max_j = _lastMaxCol.get(l)[r][c];
 
@@ -98,28 +98,28 @@ public class MaxPoolLayer extends Layer{
 
     @Override
     public void backPropagation(double[] dLd0) {
-        List<double[][]> matrix = vectorToMatrix(dLd0, getOuputLength(), getOuputRows(), getOuputCols());
+        List<double[][]> matrix = vectorToMatrix(dLd0, getOutputLength(), getOutputRows(), getOutputCols());
         backPropagation(matrix);
     }
 
     @Override
-    public int getOuputLength() {
+    public int getOutputLength() {
         return _inLength;
     }
 
     @Override
-    public int getOuputRows() {
+    public int getOutputRows() {
         return (_inRows-_windowSize)/_stepSize + 1;
     }
 
     @Override
-    public int getOuputCols() {
+    public int getOutputCols() {
         return ( _inCols-_windowSize)/_stepSize + 1;
     }
 
     @Override
-    public int getOuputElements() {
-        return _inLength*getOuputRows()*getOuputCols();
+    public int getOutputElements() {
+        return _inLength*getOutputRows()*getOutputCols();
     }
 
 }
