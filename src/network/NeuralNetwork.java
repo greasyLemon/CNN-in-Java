@@ -10,6 +10,7 @@ import static data.MatrixUtility.add;
 import static data.MatrixUtility.multiply;
 
 public class NeuralNetwork {
+
     List<Layer> _layers;
     double scaleFactor;
 
