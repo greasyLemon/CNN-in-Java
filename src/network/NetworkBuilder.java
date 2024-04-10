@@ -5,8 +5,7 @@ import layers.FullyConnectedLayer;
 import layers.Layer;
 import layers.MaxPoolLayer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class NetworkBuilder {
 
@@ -14,6 +13,8 @@ public class NetworkBuilder {
     private int _inputRows;
     private int _inputCols;
     private double _scaleFactor;
+    public List<List<Object>> svParams;
+    public List<String> svLayers;
     List<Layer> _layers;
 
     public NetworkBuilder(int _inputRows, int _inputCols, double _scaleFactor) {
@@ -21,9 +22,13 @@ public class NetworkBuilder {
         this._inputCols = _inputCols;
         this._scaleFactor = _scaleFactor;
         _layers = new ArrayList<>();
+        svParams = new ArrayList<>();
+        svLayers = new ArrayList<>();
     }
 
     public void addConvolutionLayer(int numFilters, int filterSize, int stepSize, double learningRate, long SEED){
+        svLayers.add("Conv");
+        svParams.add(Arrays.asList(numFilters, filterSize,stepSize, learningRate, SEED));
         if(_layers.isEmpty()){
             _layers.add(new ConvolutionLayer(filterSize, stepSize, 1, _inputRows, _inputCols, SEED, numFilters, learningRate));
         } else {
@@ -33,6 +38,8 @@ public class NetworkBuilder {
     }
 
     public void addMaxPoolLayer(int windowSize, int stepSize){
+        svLayers.add("Pool");
+        svParams.add(Arrays.asList(windowSize, stepSize));
         if(_layers.isEmpty()){
             _layers.add(new MaxPoolLayer(stepSize, windowSize, 1, _inputRows, _inputCols));
         } else {
@@ -42,6 +49,8 @@ public class NetworkBuilder {
     }
 
     public void addFullyConnectedLayer(int outLength, double learningRate, long SEED){
+        svLayers.add("FC");
+        svParams.add(Arrays.asList(outLength, learningRate, SEED));
         if(_layers.isEmpty()) {
             _layers.add(new FullyConnectedLayer(_inputCols*_inputRows, outLength, SEED, learningRate));
         } else {
@@ -55,5 +64,6 @@ public class NetworkBuilder {
         net = new NeuralNetwork(_layers, _scaleFactor);
         return net;
     }
+
 
 }

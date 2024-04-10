@@ -9,6 +9,7 @@ public class FullyConnectedLayer extends Layer{
     private final double leak = 0.01;
 
     private double[][] _weights;
+    public double[][] _svWeights;
     private int _inLength;
     private int _outLength;
     private double _learningRate;
@@ -22,13 +23,18 @@ public class FullyConnectedLayer extends Layer{
         this._outLength = _outLength;
         this.SEED = SEED;
         this._learningRate = learningRate;
+        this._svWeights = _svWeights;
 
         _weights = new double[_inLength][_outLength];
         setRandomWeights();
     }
 
-    public double[] fullyConnectedForwardPass(double[] input){
+    public double[][] get_svWeights() {
+        return _svWeights;
+    }
 
+    public double[] fullyConnectedForwardPass(double[] input){
+        _svWeights = _weights;
         lastX = input;
 
         double[] z = new double[_outLength];

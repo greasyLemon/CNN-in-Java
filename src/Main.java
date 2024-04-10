@@ -3,7 +3,9 @@ import data.Image;
 import network.NetworkBuilder;
 import network.NeuralNetwork;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static java.util.Collections.shuffle;
@@ -18,7 +20,7 @@ public class Main {
         return batch;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int batchSize = 6000;
         long SEED = 123;
 
@@ -26,7 +28,7 @@ public class Main {
 
         List<Image> imagesTest = new DataReader().readData("data/mnist_test.csv");
         List<Image> imagesTrain = new DataReader().readData("data/mnist_train.csv");
-        //System.out.println(imagesTrain.get(0).toString());
+        //System.out.println(imagesTest.get(47).toString());
 
         System.out.println("Images Train size: " + imagesTrain.size());
         System.out.println("Images Test size: " + imagesTest.size());
@@ -41,7 +43,7 @@ public class Main {
         float rate = net.test(imagesTest);
         System.out.println("Pre training success rate: " + rate);
 
-        int epochs = 10;
+        int epochs = 2;
 
         shuffle(imagesTrain);
         List<List<Image>> batch = subBatch(imagesTrain, batchSize);
@@ -57,7 +59,11 @@ public class Main {
             System.out.println("Success rate after round " + (i+1) + ": " + rate);
         }
 
-        int result = net.guess(imagesTest.getFirst());
+        List<List<Object>> params = builder.svParams;
+        List<String> layers = builder.svLayers;
+        net.save(layers, params, "ckpt");
+
+        int result = net.guess(imagesTest.get(47));
         System.out.println(result);
     }
 }
