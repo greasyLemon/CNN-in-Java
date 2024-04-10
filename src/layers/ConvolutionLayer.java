@@ -12,6 +12,7 @@ public class ConvolutionLayer extends Layer{
     private long SEED;
 
     private List<double[][]> _filters;
+    public List<double[][]> _svFilters;
     private int _filterSize;
     private int _stepsize;
 
@@ -23,6 +24,7 @@ public class ConvolutionLayer extends Layer{
     private List<double[][]> _lastInput;
 
     public ConvolutionLayer(int _filterSize, int _stepsize, int _inLength, int _inRows, int _inCols, long SEED, int numFilters, double learningRate) {
+        this._svFilters = _svFilters;
         this._filterSize = _filterSize;
         this._stepsize = _stepsize;
         this._inLength = _inLength;
@@ -142,6 +144,10 @@ public class ConvolutionLayer extends Layer{
     }
 
 
+    public List<double[][]> get_svFilters() {
+        return _svFilters;
+    }
+
     @Override
     public double[] getOutput(List<double[][]> input) {
 
@@ -204,7 +210,7 @@ public class ConvolutionLayer extends Layer{
             double[][] modified = add(filtersDelta.get(f), _filters.get(f));
             _filters.set(f,modified);
         }
-
+        _svFilters = _filters;
         if(_previousLayer!= null){
             _previousLayer.backPropagation(dLdOPreviousLayer);
         }

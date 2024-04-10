@@ -113,20 +113,44 @@ public class NeuralNetwork {
 
     public void save(List<String> layers, List<List<Object>> params, String filename) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
-        for (int i = 0; i < layers.size(); i++) {
-            System.out.println(layers.get(i));
-            System.out.println(params.get(i));
-        }
+        int size;
         try {
+            for (int i = 0; i < layers.size(); i++) {
+                writer.write(layers.get(i) + " ");
+            }
+            writer.write("\n");
+            for (int i = 0; i < layers.size(); i++) {
+                if (layers.get(i) == "Conv") {size = 5;} else if (layers.get(i) == "Pool") {size = 2;} else {size = 3;}
+                for (int j = 0; j < size; j++) {
+                    writer.write(params.get(i).get(j) + " ");
+                }
+                writer.write("\n");
+            }
+            writer.write("\n");
+
             if (layers.getLast() == "FC") {
                 FullyConnectedLayer fc = (FullyConnectedLayer) _layers.getLast();
                 double[][] weights = fc.get_svWeights();
                 for (int i = 0; i < weights.length; i++) {
                     for (int j = 0; j < weights[0].length; j++) {
-                        System.out.print(weights[i][j] + " ");
                         writer.write(weights[i][j] + " ");
                     }
-                    System.out.println();
+                    writer.write("\n");
+                }
+                writer.write("\n");
+            }
+
+            if (layers.getFirst() == "Conv") {
+                ConvolutionLayer conv = (ConvolutionLayer) _layers.getFirst();
+                List<double[][]> filters = conv.get_svFilters();
+                for (int k = 0; k < filters.size(); k++) {
+                    double[][] filter = filters.get(k);
+                    for (int i = 0; i < filter.length; i++) {
+                        for (int j = 0; j < filter[0].length; j++) {
+                            writer.write(filter[i][j] + " ");
+                        }
+                        writer.write("\n");
+                    }
                     writer.write("\n");
                 }
             }

@@ -34,7 +34,6 @@ public class FullyConnectedLayer extends Layer{
     }
 
     public double[] fullyConnectedForwardPass(double[] input){
-        _svWeights = _weights;
         lastX = input;
 
         double[] z = new double[_outLength];
@@ -97,7 +96,7 @@ public class FullyConnectedLayer extends Layer{
                 dLdw = dLdO[j]*dOdz*dzdw;
 
                 _weights[k][j] -= dLdw*_learningRate;
-
+                _svWeights = _weights;
                 dLdX_sum += dLdO[j]*dOdz*dzdx;
             }
 
