@@ -5,13 +5,11 @@ import layers.ConvolutionLayer;
 import layers.FullyConnectedLayer;
 import layers.Layer;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import static data.MatrixUtility.add;
 import static data.MatrixUtility.multiply;
@@ -111,7 +109,7 @@ public class NeuralNetwork {
 
     }
 
-    public void save(List<String> layers, List<List<Object>> params, String filename) throws IOException {
+    public void save(List<String> layers, List<List<Object>> params, String filename, int inRows, int inCols, double scaleFactor) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
         int size;
         try {
@@ -126,6 +124,7 @@ public class NeuralNetwork {
                 }
                 writer.write("\n");
             }
+            writer.write(inRows + " " + inCols + " " + scaleFactor + "\n");
             writer.write("\n");
 
             if (layers.getLast() == "FC") {
@@ -160,4 +159,44 @@ public class NeuralNetwork {
         }
     }
 
+    public void load(String filename) throws FileNotFoundException {
+        File file = new File(filename);
+        Scanner sc = new Scanner(file);
+
+        String line = sc.nextLine();
+        String[] layers = line.split(" ");
+        System.out.println(layers[0] + layers[1] + layers[2]);
+        int k = 0;
+        List<String[]> params = new ArrayList<>();
+        while (k<layers.length) {
+            String lineI = sc.nextLine();
+            String[] param = lineI.split(" ");
+            params.add(param);
+            k++;
+        }
+        String lineB = sc.nextLine();
+        String[] build = lineB.split(" ");
+        int inRows = Integer.parseInt(build[0]);
+        int inCols = Integer.parseInt(build[1]);
+
+        sc.nextLine();
+        NetworkBuilder builder = new NetworkBuilder();
+        System.out.println(params.get(2)[0]);
+        int outLength = Integer.parseInt(params.get(2)[0]);
+        int inLength = inRows*inCols;
+
+        double[][] weights = new double[inLength][outLength];
+        System.out.println(inLength + " " + outLength);
+        for (int i = 0; i < inLength; i++){
+            String matrixWeight = sc.nextLine();
+            String[] lineW = matrixWeight.split(" ");
+            for (int j = 0; j < outLength; j++) {
+                weights[i][j] = Double.parseDouble(lineW[j]);
+                System.out.print(weights[i][j] + " ");
+            }
+            System.out.print("\n");
+        }
+
+        sc.close();
+    }
 }

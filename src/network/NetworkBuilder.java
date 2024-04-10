@@ -26,6 +26,16 @@ public class NetworkBuilder {
         svLayers = new ArrayList<>();
     }
 
+    public NetworkBuilder() {};
+
+    public int get_inputRows() {
+        return _inputRows;
+    }
+
+    public int get_inputCols() {
+        return _inputCols;
+    }
+
     public void addConvolutionLayer(int numFilters, int filterSize, int stepSize, double learningRate, long SEED){
         svLayers.add("Conv");
         svParams.add(Arrays.asList(numFilters, filterSize,stepSize, learningRate, SEED));

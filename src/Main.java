@@ -3,10 +3,12 @@ import data.Image;
 import network.NetworkBuilder;
 import network.NeuralNetwork;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import static java.util.Collections.shuffle;
 
@@ -28,7 +30,7 @@ public class Main {
 
         List<Image> imagesTest = new DataReader().readData("data/mnist_test.csv");
         List<Image> imagesTrain = new DataReader().readData("data/mnist_train.csv");
-        //System.out.println(imagesTest.get(47).toString());
+        System.out.println(imagesTest.get(47));
 
         System.out.println("Images Train size: " + imagesTrain.size());
         System.out.println("Images Test size: " + imagesTest.size());
@@ -43,7 +45,7 @@ public class Main {
         float rate = net.test(imagesTest);
         System.out.println("Pre training success rate: " + rate);
 
-        int epochs = 2;
+        int epochs = 10;
 
         shuffle(imagesTrain);
         List<List<Image>> batch = subBatch(imagesTrain, batchSize);
@@ -61,9 +63,23 @@ public class Main {
 
         List<List<Object>> params = builder.svParams;
         List<String> layers = builder.svLayers;
-        net.save(layers, params, "ckpt");
+        //net.save(layers, params, "ckpt", 28, 28, 256*100);
+        //net.load("ckpt");
 
-        int result = net.guess(imagesTest.get(47));
+        File file = new File("data/output.txt");
+        Scanner sc = new Scanner(file);
+        double[][] img = new double[28][28];
+        for (int i = 0; i< 28; i++) {
+            String line = sc.nextLine();
+            String[] value = line.split(" ");
+            for (int j =0; j <28; j++) {
+                img[i][j] = Double.parseDouble(value[j]);
+                System.out.print(img[i][j] + ", ");
+            }
+            System.out.println();
+        }
+        Image test = new Image(img, 2);
+        int result = net.guess(test);
         System.out.println(result);
     }
 }
