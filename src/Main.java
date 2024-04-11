@@ -47,7 +47,7 @@ public class Main {
 //        float rate = net.test(imagesTest);
 //        System.out.println("Pre training success rate: " + rate);
 //
-//        int epochs = 10;
+//        int epochs = 5;
 //
 //        shuffle(imagesTrain);
 //        List<List<Image>> batch = subBatch(imagesTrain, batchSize);
@@ -70,8 +70,8 @@ public class Main {
         NeuralNetwork network = new NeuralNetwork();
         NeuralNetwork net = network.load(3,"ckpt");
         int result = net.guess(imagesTest.get(4567));
-        System.out.println(imagesTest.get(4567).getLabel());
-        System.out.println(result);
+        System.out.println("Number: " + imagesTest.get(4567).getLabel());
+        System.out.println("Predict: " + result);
 
     }
 }

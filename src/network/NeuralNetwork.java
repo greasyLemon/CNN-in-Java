@@ -162,6 +162,7 @@ public class NeuralNetwork {
     }
 
     public NeuralNetwork load(int numLayers, String filename) throws FileNotFoundException {
+        String[] layers = loadLayers("ckpt");
         LinkedHashMap<String, String[]> layer_param = loadLayerNParam("ckpt");
         String[] convParams = (String[]) layer_param.get("Conv");
         String[] poolParams = (String[]) layer_param.get("Pool");
@@ -179,32 +180,34 @@ public class NeuralNetwork {
         int stepSizeC = Integer.parseInt(convParams[2]);
         double learningRate = Double.parseDouble(convParams[3]);
         long SEED = Long.parseLong(convParams[4]);
-        int outRowsC = (inRows-filterSize)/stepSizeC +1;
-        int outColsC = (inCols-filterSize)/stepSizeC +1;
-
         int windowSize = Integer.parseInt(poolParams[0]);
         int stepSizeP = Integer.parseInt(poolParams[1]);
-        int outRowsP = (outRowsC-windowSize)/stepSizeP + 1;
-        int outColsP = (outColsC-windowSize)/stepSizeP + 1;
 
         int outLength = Integer.parseInt(fcParams[0]);
-        int inLength = numFilters*outRowsP*outColsP;
-        double[][] weights = loadWeights(inLength, outLength, skipToWeight, "ckpt");
-        int skipToFilters = skipToWeight + weights.length + 1;
-
-        List<double[][]> filters = loadFilters(numFilters, filterSize, skipToFilters, "ckpt");
-
-        String[] layers = loadLayers("ckpt");
         NetworkBuilder builder = new NetworkBuilder(inRows, inCols, scaleFactor);
+        int outRows = inRows;
+        int outCols = inCols;
+        int numConv = 0;
         for (String key:layers) {
             if (key.equals("Conv")) {
+                outRows = (outRows - filterSize)/stepSizeC + 1;
+                outCols = (outCols - filterSize)/stepSizeC + 1;
+                numConv++;
                 builder.addConvolutionLayer(numFilters, filterSize, stepSizeC, learningRate, SEED);
             } else if (key.equals("Pool")) {
+                outRows = (outRows - windowSize)/stepSizeP + 1;
+                outCols = (outCols - windowSize)/stepSizeP + 1;
                 builder.addMaxPoolLayer(windowSize, stepSizeP);
             } else if (key.equals("FC")) {
                 builder.addFullyConnectedLayer(outLength, learningRate, SEED);
             }
         }
+
+        int inLength = (int) Math.pow(numFilters, numConv)*outRows*outCols;
+        double[][] weights = loadWeights(inLength, outLength, skipToWeight, "ckpt");
+        int skipToFilters = skipToWeight + weights.length + 1;
+
+        List<double[][]> filters = loadFilters(numFilters, filterSize, skipToFilters, "ckpt");
 
         NeuralNetwork net = builder.build();
         ((ConvolutionLayer) net._layers.getFirst()).set_filters(filters);
