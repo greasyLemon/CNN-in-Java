@@ -1,3 +1,4 @@
+import UI.MouseMotionListenerDemo;
 import data.DataReader;
 import data.Image;
 import network.NetworkBuilder;
@@ -25,18 +26,18 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        int batchSize = 6000;
-        long SEED = 123;
-
-        System.out.println("Starting data loading...");
-
-        List<Image> imagesTest = new DataReader().readData("data/mnist_test.csv");
-        List<Image> imagesTrain = new DataReader().readData("data/mnist_train.csv");
-        //System.out.println(imagesTest.get(47));
-
-        System.out.println("Images Train size: " + imagesTrain.size());
-        System.out.println("Images Test size: " + imagesTest.size());
-
+//        int batchSize = 6000;
+//        long SEED = 123;
+//
+//        System.out.println("Starting data loading...");
+//
+//        List<Image> imagesTest = new DataReader().readData("data/mnist_test.csv");
+//        List<Image> imagesTrain = new DataReader().readData("data/mnist_train.csv");
+//        //System.out.println(imagesTest.get(47));
+//
+//        System.out.println("Images Train size: " + imagesTrain.size());
+//        System.out.println("Images Test size: " + imagesTest.size());
+//
 //        NetworkBuilder builder = new NetworkBuilder(28,28,256*100);
 //        builder.addConvolutionLayer(8, 5, 1, 0.1, SEED);
 //        builder.addMaxPoolLayer(3,2);
@@ -47,7 +48,7 @@ public class Main {
 //        float rate = net.test(imagesTest);
 //        System.out.println("Pre training success rate: " + rate);
 //
-//        int epochs = 5;
+//        int epochs = 20;
 //
 //        shuffle(imagesTrain);
 //        List<List<Image>> batch = subBatch(imagesTrain, batchSize);
@@ -66,12 +67,14 @@ public class Main {
 //        List<List<Object>> params = builder.svParams;
 //        List<String> layers = builder.svLayers;
 //        net.save(layers, params, "ckpt", 28, 28, 256*100);
+        new MouseMotionListenerDemo();
 
-        NeuralNetwork network = new NeuralNetwork();
-        NeuralNetwork net = network.load(3,"ckpt");
-        int result = net.guess(imagesTest.get(4567));
-        System.out.println("Number: " + imagesTest.get(4567).getLabel());
-        System.out.println("Predict: " + result);
+//        NeuralNetwork network = new NeuralNetwork();
+//        NeuralNetwork net = network.load(3,"ckpt");
+//        double[][] img = DataReader.loadImage("output.txt");
+//        Image test = new Image(img,2);
+//        int result = net.guess(test);
+//        System.out.println("Predict: " + result);
 
     }
 }
