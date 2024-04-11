@@ -4,6 +4,7 @@ import network.NetworkBuilder;
 import network.NeuralNetwork;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,6 +14,7 @@ import java.util.Scanner;
 import static java.util.Collections.shuffle;
 
 public class Main {
+
     public static List<List<Image>> subBatch(List<Image> imageSet, int batchSize) {
         List<List<Image>> batch = new ArrayList<>();
         for (int i = 0; i < imageSet.size()/batchSize; i++) {
@@ -35,51 +37,41 @@ public class Main {
         System.out.println("Images Train size: " + imagesTrain.size());
         System.out.println("Images Test size: " + imagesTest.size());
 
-        NetworkBuilder builder = new NetworkBuilder(28,28,256*100);
-        builder.addConvolutionLayer(8, 5, 1, 0.1, SEED);
-        builder.addMaxPoolLayer(3,2);
-        builder.addFullyConnectedLayer(10, 0.1, SEED);
-
-        NeuralNetwork net = builder.build();
-
-        float rate = net.test(imagesTest);
-        System.out.println("Pre training success rate: " + rate);
-
-        int epochs = 1;
-
-        shuffle(imagesTrain);
-        List<List<Image>> batch = subBatch(imagesTrain, batchSize);
-        for(int i = 0; i < epochs; i++){
-            if (i%(imagesTrain.size()/batchSize)==0 && i>=(imagesTrain.size()/batchSize)) {
-                shuffle(imagesTrain);
-                batch.clear();
-                batch = subBatch(imagesTrain, batchSize);
-            }
-            List<Image> batchIndex = batch.get(i%(imagesTrain.size()/batchSize));
-            net.train(batchIndex);
-            rate = net.test(imagesTest);
-            System.out.println("Success rate after round " + (i+1) + ": " + rate);
-        }
-
-        List<List<Object>> params = builder.svParams;
-        List<String> layers = builder.svLayers;
-        net.save(layers, params, "ckpt", 28, 28, 256*100);
-        net.load("ckpt");
-
-//        File file = new File("data/output.txt");
-//        Scanner sc = new Scanner(file);
-//        double[][] img = new double[28][28];
-//        for (int i = 0; i< 28; i++) {
-//            String line = sc.nextLine();
-//            String[] value = line.split(" ");
-//            for (int j =0; j <28; j++) {
-//                img[i][j] = Double.parseDouble(value[j]);
-//                System.out.print(img[i][j] + ", ");
+//        NetworkBuilder builder = new NetworkBuilder(28,28,256*100);
+//        builder.addConvolutionLayer(8, 5, 1, 0.1, SEED);
+//        builder.addMaxPoolLayer(3,2);
+//        builder.addFullyConnectedLayer(10, 0.1, SEED);
+//
+//        NeuralNetwork net = builder.build();
+//
+//        float rate = net.test(imagesTest);
+//        System.out.println("Pre training success rate: " + rate);
+//
+//        int epochs = 10;
+//
+//        shuffle(imagesTrain);
+//        List<List<Image>> batch = subBatch(imagesTrain, batchSize);
+//        for(int i = 0; i < epochs; i++){
+//            if (i%(imagesTrain.size()/batchSize)==0 && i>=(imagesTrain.size()/batchSize)) {
+//                shuffle(imagesTrain);
+//                batch.clear();
+//                batch = subBatch(imagesTrain, batchSize);
 //            }
-//            System.out.println();
+//            List<Image> batchIndex = batch.get(i%(imagesTrain.size()/batchSize));
+//            net.train(batchIndex);
+//            rate = net.test(imagesTest);
+//            System.out.println("Success rate after round " + (i+1) + ": " + rate);
 //        }
-//        Image test = new Image(img, 2);
-//        int result = net.guess(test);
-//        System.out.println(result);
+//
+//        List<List<Object>> params = builder.svParams;
+//        List<String> layers = builder.svLayers;
+//        net.save(layers, params, "ckpt", 28, 28, 256*100);
+
+        NeuralNetwork network = new NeuralNetwork();
+        NeuralNetwork net = network.load(3,"ckpt");
+        int result = net.guess(imagesTest.get(4567));
+        System.out.println(imagesTest.get(4567).getLabel());
+        System.out.println(result);
+
     }
 }

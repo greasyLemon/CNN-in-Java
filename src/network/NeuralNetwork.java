@@ -25,6 +25,8 @@ public class NeuralNetwork {
         linkLayers();
     }
 
+    public NeuralNetwork() {};
+
     private void linkLayers(){
 
         if(_layers.size() <= 1){
@@ -159,14 +161,15 @@ public class NeuralNetwork {
         }
     }
 
-    public void load(String filename) throws FileNotFoundException {
-        LinkedHashMap<String, String[]> layer_param = loadFilterNParam("ckpt");
+    public NeuralNetwork load(int numLayers, String filename) throws FileNotFoundException {
+        LinkedHashMap<String, String[]> layer_param = loadLayerNParam("ckpt");
         String[] convParams = (String[]) layer_param.get("Conv");
         String[] poolParams = (String[]) layer_param.get("Pool");
         String[] fcParams = (String[]) layer_param.get("FC");
-        int skipLayers = layer_param.size() + 1;
+        int skipLayers = numLayers + 1;
 
         String[] build = loadBuilder(skipLayers, "ckpt");
+        double scaleFactor = Double.parseDouble(build[2]);
         int inRows = Integer.parseInt(build[0]);
         int inCols = Integer.parseInt(build[1]);
         int skipToWeight = skipLayers + 2;
@@ -174,20 +177,39 @@ public class NeuralNetwork {
         int numFilters = Integer.parseInt(convParams[0]);
         int filterSize = Integer.parseInt(convParams[1]);
         int stepSizeC = Integer.parseInt(convParams[2]);
-        int inRowsC = (inRows-filterSize)/stepSizeC +1;
-        int inColsC = (inCols-filterSize)/stepSizeC +1;
+        double learningRate = Double.parseDouble(convParams[3]);
+        long SEED = Long.parseLong(convParams[4]);
+        int outRowsC = (inRows-filterSize)/stepSizeC +1;
+        int outColsC = (inCols-filterSize)/stepSizeC +1;
 
         int windowSize = Integer.parseInt(poolParams[0]);
         int stepSizeP = Integer.parseInt(poolParams[1]);
-        int inRowsP = (inRowsC-windowSize)/stepSizeP + 1;
-        int inColsP = (inColsC-windowSize)/stepSizeP + 1;
+        int outRowsP = (outRowsC-windowSize)/stepSizeP + 1;
+        int outColsP = (outColsC-windowSize)/stepSizeP + 1;
 
         int outLength = Integer.parseInt(fcParams[0]);
-        int inLength = numFilters*inRowsP*inColsP;
+        int inLength = numFilters*outRowsP*outColsP;
         double[][] weights = loadWeights(inLength, outLength, skipToWeight, "ckpt");
         int skipToFilters = skipToWeight + weights.length + 1;
 
         List<double[][]> filters = loadFilters(numFilters, filterSize, skipToFilters, "ckpt");
+
+        String[] layers = loadLayers("ckpt");
+        NetworkBuilder builder = new NetworkBuilder(inRows, inCols, scaleFactor);
+        for (String key:layers) {
+            if (key.equals("Conv")) {
+                builder.addConvolutionLayer(numFilters, filterSize, stepSizeC, learningRate, SEED);
+            } else if (key.equals("Pool")) {
+                builder.addMaxPoolLayer(windowSize, stepSizeP);
+            } else if (key.equals("FC")) {
+                builder.addFullyConnectedLayer(outLength, learningRate, SEED);
+            }
+        }
+
+        NeuralNetwork net = builder.build();
+        ((ConvolutionLayer) net._layers.getFirst()).set_filters(filters);
+        ((FullyConnectedLayer) net._layers.getLast()).set_weights(weights);
+        return net;
     }
     public double[][] loadWeights(int inLength, int outLength, int skipLines, String filename) throws FileNotFoundException{
         File file = new File(filename);
@@ -199,6 +221,9 @@ public class NeuralNetwork {
         double[][] weights = new double[inLength][outLength];
         for (int i = 0; i < inLength; i++){
             String matrixWeight = sc.nextLine();
+            if (matrixWeight.isEmpty()) {
+                throw new RuntimeException("Empty line found in weight file at line: " + (i+skipLines+1));
+            }
             String[] lineW = matrixWeight.split(" ");
             for (int j = 0; j < outLength; j++) {
                 weights[i][j] = Double.parseDouble(lineW[j]);
@@ -220,7 +245,17 @@ public class NeuralNetwork {
         return build;
     }
 
-    public LinkedHashMap<String, String[]> loadFilterNParam(String filename) throws FileNotFoundException {
+    public String[] loadLayers(String filename) throws FileNotFoundException {
+        File file = new File(filename);
+        Scanner sc = new Scanner(file);
+
+        String line = sc.nextLine();
+        String[] layers = line.split(" ");
+
+        return layers;
+    }
+
+    public LinkedHashMap<String, String[]> loadLayerNParam(String filename) throws FileNotFoundException {
         File file = new File(filename);
         Scanner sc = new Scanner(file);
 

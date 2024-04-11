@@ -29,6 +29,10 @@ public class FullyConnectedLayer extends Layer{
         setRandomWeights();
     }
 
+    public void set_weights(double[][] _weights) {
+        this._weights = _weights;
+    }
+
     public double[][] get_svWeights() {
         return _svWeights;
     }

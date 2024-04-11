@@ -37,6 +37,14 @@ public class ConvolutionLayer extends Layer{
 
     }
 
+    public void set_filters(List<double[][]> _filters1) {
+        this._filters = _filters1;
+    }
+
+    public List<double[][]> get_filters() {
+        return _filters;
+    }
+
     private void generateRandomFilters(int numFilters){
         List<double[][]> filters = new ArrayList<>();
         Random random = new Random(SEED);
