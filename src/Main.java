@@ -33,7 +33,7 @@ public class Main {
 //
 //        List<Image> imagesTest = new DataReader().readData("data/mnist_test.csv");
 //        List<Image> imagesTrain = new DataReader().readData("data/mnist_train.csv");
-//        //System.out.println(imagesTest.get(47));
+//        //System.out.println(imagesTest.get(1));
 //
 //        System.out.println("Images Train size: " + imagesTrain.size());
 //        System.out.println("Images Test size: " + imagesTest.size());
@@ -48,7 +48,7 @@ public class Main {
 //        float rate = net.test(imagesTest);
 //        System.out.println("Pre training success rate: " + rate);
 //
-//        int epochs = 20;
+//        int epochs = 30;
 //
 //        shuffle(imagesTrain);
 //        List<List<Image>> batch = subBatch(imagesTrain, batchSize);
@@ -75,6 +75,7 @@ public class Main {
 //        Image test = new Image(img,2);
 //        int result = net.guess(test);
 //        System.out.println("Predict: " + result);
+
 
     }
 }

@@ -7,13 +7,18 @@ import network.NeuralNetwork;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
 public class MouseMotionListenerDemo extends JFrame implements MouseMotionListener, ActionListener {
     double[][] matrix = new double[28][28];
+    int brushSize = 2;
     JPanel drawPanel;
     JButton stopButton;
     JButton clearButton;
+    JButton showButton;
+    List<Object> array =  new ArrayList<>();
 
     public MouseMotionListenerDemo() {
         setSize(300, 350);
@@ -41,9 +46,13 @@ public class MouseMotionListenerDemo extends JFrame implements MouseMotionListen
         clearButton = new JButton("Clear");
         clearButton.addActionListener(this);
 
+        showButton = new JButton("Show");
+        showButton.addActionListener(this);
+
         JPanel controlPanel = new JPanel();
         controlPanel.add(stopButton);
         controlPanel.add(clearButton);
+        controlPanel.add(showButton);
 
         add(drawPanel, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.SOUTH);
@@ -53,7 +62,7 @@ public class MouseMotionListenerDemo extends JFrame implements MouseMotionListen
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        int brushSize = 2;
+
         int x = e.getX() / 10;
         int y = e.getY() / 10;
         for (int i = y; i < y + brushSize && i < 28; i++) {
@@ -70,10 +79,10 @@ public class MouseMotionListenerDemo extends JFrame implements MouseMotionListen
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         if (e.getSource() == stopButton) {
             saveMatrixToFile("output.txt");
-            System.out.println("Lưu ma trận thành công.");
-
+            //System.out.println("Lưu ma trận thành công.");
             NeuralNetwork network = new NeuralNetwork();
             NeuralNetwork net = null;
             try {
@@ -89,6 +98,7 @@ public class MouseMotionListenerDemo extends JFrame implements MouseMotionListen
             }
             data.Image test = new Image(img,2);
             int result = net.guess(test);
+            array.add(result);
             System.out.println("Predict: " + result);
         } else if (e.getSource() == clearButton) {
             for (int i = 0; i < 28; i++) {
@@ -96,9 +106,11 @@ public class MouseMotionListenerDemo extends JFrame implements MouseMotionListen
                     matrix[i][j] = 0;
                 }
             }
-
-            // Trigger repaint for cleared canvas
             drawPanel.repaint();
+        } else if (e.getSource() == showButton) {
+            for (int i = 0; i < array.size(); i++) {
+                System.out.print((int) array.get(i));
+            }
         }
     }
 
