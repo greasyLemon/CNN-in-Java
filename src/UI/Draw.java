@@ -11,17 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-public class MouseMotionListenerDemo extends JFrame implements MouseMotionListener, ActionListener {
+public class Draw extends JFrame implements MouseMotionListener, ActionListener {
     double[][] matrix = new double[28][28];
     int brushSize = 2;
+    JLabel predictLabel = new JLabel("Prediction: -");
     JPanel drawPanel;
     JButton stopButton;
     JButton clearButton;
     JButton showButton;
     List<Object> array =  new ArrayList<>();
 
-    public MouseMotionListenerDemo() {
-        setSize(300, 350);
+    public Draw() {
+        setSize(395, 365);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         drawPanel = new JPanel() {
@@ -39,23 +40,35 @@ public class MouseMotionListenerDemo extends JFrame implements MouseMotionListen
         };
         drawPanel.setPreferredSize(new Dimension(280, 280));
         drawPanel.addMouseMotionListener(this);
+        drawPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#3700B3"), 6, false));
 
-        stopButton = new JButton("Stop");
+        stopButton = new JButton("Predict");
         stopButton.addActionListener(this);
+        stopButton.setBackground(Color.decode("#03DAC6"));
+        stopButton.setForeground(Color.white);
 
         clearButton = new JButton("Clear");
         clearButton.addActionListener(this);
+        clearButton.setBackground(Color.decode("#03DAC6"));
+        clearButton.setForeground(Color.white);
 
         showButton = new JButton("Show");
         showButton.addActionListener(this);
+        showButton.setBackground(Color.decode("#03DAC6"));
+        showButton.setForeground(Color.white);
+
+        predictLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.decode("#CF6679"), 6, false),BorderFactory.createEmptyBorder(10,10,10,10)));
 
         JPanel controlPanel = new JPanel();
         controlPanel.add(stopButton);
         controlPanel.add(clearButton);
         controlPanel.add(showButton);
+        controlPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#BB86FC"), 4, false));
+        //controlPanel.setBackground(Color.white);
 
         add(drawPanel, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.SOUTH);
+        add(predictLabel, BorderLayout.EAST);
 
         setVisible(true);
     }
@@ -70,7 +83,7 @@ public class MouseMotionListenerDemo extends JFrame implements MouseMotionListen
                 matrix[i][j] = 255;
             }
         }
-        drawPanel.repaint(); // Vẽ lại panel
+        drawPanel.repaint();
     }
 
     @Override
@@ -99,13 +112,15 @@ public class MouseMotionListenerDemo extends JFrame implements MouseMotionListen
             data.Image test = new Image(img,2);
             int result = net.guess(test);
             array.add(result);
-            System.out.println("Predict: " + result);
+            predictLabel.setText("Prediction: " + result);
+            //System.out.println("Predict: " + result);
         } else if (e.getSource() == clearButton) {
             for (int i = 0; i < 28; i++) {
                 for (int j = 0; j < 28; j++) {
-                    matrix[i][j] = 0;
-                }
+                    matrix[i][j] = 0;                }
+
             }
+            predictLabel.setText("Prediction: -");
             drawPanel.repaint();
         } else if (e.getSource() == showButton) {
             for (int i = 0; i < array.size(); i++) {
@@ -128,6 +143,6 @@ public class MouseMotionListenerDemo extends JFrame implements MouseMotionListen
     }
 
     public static void main(String[] args) {
-        new MouseMotionListenerDemo();
+        new Draw();
     }
 }
